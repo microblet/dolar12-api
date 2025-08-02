@@ -26,6 +26,9 @@ Route::middleware('api.key')->group(function () {
     
     // Ruta de salud de la API
     Route::get('/health', [DolarController::class, 'health'])->name('api.health');
+    
+    // Ruta de noticias de economía
+    Route::get('/noticias', [DolarController::class, 'noticias'])->name('noticias.index');
 });
 
 // Ruta de prueba sin autenticación (opcional)

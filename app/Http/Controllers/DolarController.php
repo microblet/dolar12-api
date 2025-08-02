@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\DolarScrapingService;
+use App\Services\NoticiaService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -10,10 +11,12 @@ use Illuminate\Support\Facades\Log;
 class DolarController extends Controller
 {
     private $dolarService;
+    private $noticiaService;
 
-    public function __construct(DolarScrapingService $dolarService)
+    public function __construct(DolarScrapingService $dolarService, NoticiaService $noticiaService)
     {
         $this->dolarService = $dolarService;
+        $this->noticiaService = $noticiaService;
     }
 
     /**
@@ -135,4 +138,32 @@ class DolarController extends Controller
             ]
         ], 200);
     }
+
+    /**
+     * Obtener noticias de economía (con cache)
+     */
+    public function noticias(): JsonResponse
+    {
+        try {
+            $data = $this->noticiaService->obtenerNoticias();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $data
+            ], 200);
+            
+        } catch (\Exception $e) {
+            Log::error('Error en endpoint de noticias: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error interno del servidor',
+                'error' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+
 } 
